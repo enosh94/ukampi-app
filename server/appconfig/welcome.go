@@ -100,6 +100,6 @@ func logWelcomeBanner(version string) {
 func logDeprecatedImageUsage(dockerHubID string) {
 	//check usage of deprecated image
 	if strings.TrimSpace(dockerHubID) == "ksense" {
-		logging.Warnf("\n\n\t *** ksense/eventnative docker image is DEPRECATED. Please use jitsucom/server. For more details read https://jitsu.com/docs/deployment/deploy-with-docker ***\n")
+		logging.Warnf("\n\n\t *** ksense/eventnative docker image is DEPRECATED. Please use ukampi/server. For more details read https://jitsu.com/docs/deployment/deploy-with-docker ***\n")
 	}
 }

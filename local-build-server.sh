@@ -88,11 +88,11 @@ if [ "$docker_flag" == 'true' ]
 then
   echo ""
   echo "====================================="
-  echo "= Building jitsucom/server docker.. ="
+  echo "= Building ukampi/server docker.. ="
   echo "====================================="
   echo ""
 
-  docker build -t jitsucom/server -f server.Dockerfile --build-arg dhid=jitsucom --build-arg SDK_VERSION=$SDK_VERSION . || { echo 'Building jitsucom/server docker failed' ; exit 1; }
+  docker build -t ukampi/server -f server.Dockerfile --build-arg dhid=jitsucom --build-arg SDK_VERSION=$SDK_VERSION . || { echo 'Building ukampi/server docker failed' ; exit 1; }
 fi
 
 echo ""

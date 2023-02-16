@@ -27,7 +27,7 @@ RUN ln -s /home/$CONFIGURATOR_USER/data/config /home/$CONFIGURATOR_USER/app/res 
     chown -R $CONFIGURATOR_USER:$CONFIGURATOR_USER /home/$CONFIGURATOR_USER/logs
 #######################################
 # BUILD JS STAGE
-FROM jitsucom/configurator-builder as jsbuilder
+FROM ukampi/configurator-builder as jsbuilder
 
 # Install npm dependencies
 ADD configurator/frontend/package.json /frontend/package.json

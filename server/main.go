@@ -570,7 +570,7 @@ func initializeCoordinationService(ctx context.Context, metaStorageConfiguration
 		}
 
 		if coordinationRedisConfiguration == nil || coordinationRedisConfiguration.GetString("host") == "" {
-			//coordination.type is set but no Redis provided (e.g. in case of solo jitsucom/server without Redis)
+			//coordination.type is set but no Redis provided (e.g. in case of solo ukampi/server without Redis)
 			return nil, nil
 		}
 	} else {

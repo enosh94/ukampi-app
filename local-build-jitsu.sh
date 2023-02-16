@@ -8,9 +8,9 @@ print_usage() {
   echo " "
   echo "options:"
   echo "-h, --help                show brief help"
-  echo "-oj, --only_jitsu         specify should CLI build only jitsucom/jitsu docker. By default CLI builds jitsucom/server, jitsucom/configurator and jitsucom/jitsu images"
+  echo "-oj, --only_jitsu         specify should CLI build only jitsucom/jitsu docker. By default CLI builds ukampi/server, ukampi/configurator and jitsucom/jitsu images"
   echo "                          -oj true: build only jitsucom/jitsu"
-  echo "                          -oj false: (default) build all 3 docker images: jitsucom/server, jitsucom/configurator, jitsucom/jitsu"
+  echo "                          -oj false: (default) build all 3 docker images: ukampi/server, ukampi/configurator, jitsucom/jitsu"
 }
 
 while test $# -gt 0; do

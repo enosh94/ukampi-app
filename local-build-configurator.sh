@@ -88,11 +88,11 @@ if [ "$docker_flag" == 'true' ]
 then
   echo ""
   echo "============================================"
-  echo "= Building jitsucom/configurator docker... ="
+  echo "= Building ukampi/configurator docker... ="
   echo "============================================"
   echo ""
 
-  docker build -t jitsucom/configurator -f configurator-release.Dockerfile --build-arg dhid=jitsucom . || { echo 'Building jitsucom/configurator docker failed' ; exit 1; }
+  docker build -t ukampi/configurator -f configurator-release.Dockerfile --build-arg dhid=jitsucom . || { echo 'Building ukampi/configurator docker failed' ; exit 1; }
 fi
 
 echo ""

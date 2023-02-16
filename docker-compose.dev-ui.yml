@@ -20,7 +20,7 @@ services:
 
   jitsu:
     container_name: jitsu
-    image: jitsucom/jitsu:latest
+    image: ukampi/app:latest
     environment:
       - REDIS_URL=redis://redis:6379
     depends_on:

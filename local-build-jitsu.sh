@@ -8,9 +8,9 @@ print_usage() {
   echo " "
   echo "options:"
   echo "-h, --help                show brief help"
-  echo "-oj, --only_jitsu         specify should CLI build only jitsucom/jitsu docker. By default CLI builds ukampi/server, ukampi/configurator and jitsucom/jitsu images"
-  echo "                          -oj true: build only jitsucom/jitsu"
-  echo "                          -oj false: (default) build all 3 docker images: ukampi/server, ukampi/configurator, jitsucom/jitsu"
+  echo "-oj, --only_jitsu         specify should CLI build only ukampi/app docker. By default CLI builds ukampi/server, ukampi/configurator and ukampi/app images"
+  echo "                          -oj true: build only ukampi/app"
+  echo "                          -oj false: (default) build all 3 docker images: ukampi/server, ukampi/configurator, ukampi/app"
 }
 
 while test $# -gt 0; do
@@ -43,11 +43,11 @@ fi
 
 echo ""
 echo "============================================"
-echo "=    Building jitsucom/jitsu docker...     ="
+echo "=    Building ukampi/app docker...     ="
 echo "============================================"
 echo ""
 
-(cd docker; docker build -t jitsucom/jitsu .) || { echo 'Building jitsucom/jitsu docker failed' ; exit 1; }
+(cd docker; docker build -t ukampi/app .) || { echo 'Building ukampi/app docker failed' ; exit 1; }
 
 echo ""
 echo "============================================"

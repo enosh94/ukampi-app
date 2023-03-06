@@ -115,8 +115,3 @@ jobs:
         file: configurator-release.Dockerfile
         push: true
         tags: ${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABELs}}:latest
-
-  call-workflow-deploy:
-    if: steps.build-and-push.outcome == 'success'
-    uses: ./.github/workflows/deploy-ci.yml
-    secrets: inherit

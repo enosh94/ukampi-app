@@ -20,6 +20,8 @@ jobs:
   server-build:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.build-and-push.outcome }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -93,6 +95,8 @@ jobs:
         tags: ${{vars.REGISTRY_URL}}/${{vars.SERVER_DOCKER_IMAGE_LABEL}}:latest
 
   call-workflow-deploy:
-    if: steps.build-and-push.outcome == 'success'
+    if: |
+      always() && 
+      (needs.configurator-build.outputs.output1 == 'success')
     uses: ./.github/workflows/deploy-ci.yml
     secrets: inherit

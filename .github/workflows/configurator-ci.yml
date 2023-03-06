@@ -21,6 +21,8 @@ jobs:
   configurator-build:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.build-and-push.outcome }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -107,7 +109,8 @@ jobs:
         username: oauth2accesstoken
         password: ${{ steps.auth.outputs.access_token }}
 
-    - name: Build and push
+    - id: build-and-push
+      name: Build and push
       if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
       uses: docker/build-push-action@v3
       with:
@@ -118,6 +121,8 @@ jobs:
         tags: ${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABELs}}:latest
 
   call-workflow-deploy:
-    if: steps.build-and-push.outcome == 'success'
+    if: |
+      always() && 
+      (needs.configurator-build.outputs.output1 == 'success')
     uses: ./.github/workflows/deploy-ci.yml
     secrets: inherit

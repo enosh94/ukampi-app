@@ -22,7 +22,8 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.build-and-push.outcome }}
+      build-success-output: ${{ steps.build-and-push.outcome }}
+      access-token-output: ${{ steps.auth.outputs.access_token }}
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -123,6 +124,8 @@ jobs:
   call-workflow-deploy:
     if: |
       always() && 
-      (needs.configurator-build.outputs.output1 == 'success')
+      (needs.configurator-build.outputs.build-success-output == 'success')
     uses: ./.github/workflows/deploy-ci.yml
+    with:
+      registy-auth-token: ${{needs.configurator-build.outputs.access-token-output}}
     secrets: inherit

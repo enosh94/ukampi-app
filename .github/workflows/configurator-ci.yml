@@ -19,7 +19,7 @@ on:
 
 jobs:
   configurator-build:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       build-success-output: ${{ steps.build-and-push.outcome }}

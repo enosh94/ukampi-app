@@ -52,7 +52,7 @@ jobs:
     - name: copy docker-compose.yml via ssh
       if: |
         always() && 
-        (build-and-push-joint-docker-image == 'success')
+        (steps.build-and-push-joint-docker-image == 'success')
       uses: appleboy/scp-action@master
       with:
         host: ${{ vars.SSH_SERVER_HOST }}
@@ -66,7 +66,7 @@ jobs:
     - name: Deploy to docker
       if: |
         always() && 
-        (build-and-push-joint-docker-image == 'success')
+        (steps.build-and-push-joint-docker-image == 'success')
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ vars.SSH_SERVER_HOST }}

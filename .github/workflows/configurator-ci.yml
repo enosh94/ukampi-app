@@ -1,0 +1,122 @@
+name: Configurator CI
+
+on:
+  # push:
+  #   branches:
+  #     - 'releases/**'
+  #   paths:
+  #     - 'configurator/**'
+  pull_request:
+    types:
+      - closed
+    branches:
+      - 'release/**'
+    paths:
+      - 'configurator/**'
+  workflow_dispatch:
+
+
+jobs:
+  configurator-build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.17
+
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
+
+    - uses: pnpm/action-setup@v2
+      name: Install pnpm
+      with:
+        version: 7
+        run_install: false
+
+    - uses: actions/cache@v3
+      with:
+        # In order:
+        # * Module download cache
+        # * Build cache (Linux)
+        # * Build cache (Mac)
+        # * Build cache (Windows)
+        path: |
+          ~/go/pkg/mod
+        #  ~/.cache/go-build
+        #  ~/Library/Caches/go-build
+        #  %LocalAppData%\go-build
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+
+    - name: Check whether frontend code was changed
+      id: frontend-change
+      working-directory: ./configurator
+      # run: echo ::set-output name=status::1
+      run: git diff @~..@ --quiet ./ || echo ::set-output name=status::1
+
+    - name: Build Configurator Backend
+      if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
+      run: |
+        go get github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.10.1
+        go generate
+        go mod download
+        go build
+      working-directory: ./configurator/backend
+
+    - name: "[Frontend CI] installing packages (pnpm install)"
+      if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
+      run: pnpm install
+      working-directory: ./configurator/frontend
+
+    - name: "[Frontend CI] verify (code style & linter)"
+      if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
+      run: pnpm verify
+      working-directory: ./configurator/frontend
+
+    - name: "[Frontend CI] building"
+      if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
+      run: pnpm build
+      working-directory: ./configurator/frontend
+
+    - id: 'auth'
+      if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.SERVICE_ACCOUNT }}
+
+    - name: Login to GAR
+      if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
+      uses: docker/login-action@v2
+      with:
+        registry: ${{vars.REGISTRY_URL}}
+        username: oauth2accesstoken
+        password: ${{ steps.auth.outputs.access_token }}
+
+    - name: Build and push
+      if: ${{ success() && steps.frontend-change.outputs.status == 1 }}
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        file: configurator-release.Dockerfile
+        push: true
+        tags: ${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABELs}}:latest
+
+  call-workflow-deploy:
+    if: steps.build-and-push.outcome == 'success'
+    uses: ./.github/workflows/deploy-ci.yml
+    secrets: inherit

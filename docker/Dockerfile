@@ -1,4 +1,6 @@
 ARG SRC_VERSION=latest
+ARG SERVER_DOCKER_IMAGE
+ARG CONFIGURATOR_DOCKER_IMAGE
 
 FROM nginx:latest as main
 
@@ -44,9 +46,9 @@ RUN ln -s /home/$EVENTNATIVE_USER/data/config /home/$EVENTNATIVE_USER/app/res &&
     ln -s /home/$EVENTNATIVE_USER/data/logs /home/$EVENTNATIVE_USER/logs && \
     chown -R $EVENTNATIVE_USER:$EVENTNATIVE_USER /home/$EVENTNATIVE_USER/logs
 #######################################
-FROM ukampi/server:${SRC_VERSION} as server
+FROM ${SERVER_DOCKER_IMAGE}:${SRC_VERSION} as server
 #######################################
-FROM ukampi/configurator:${SRC_VERSION} as configurator
+FROM ${CONFIGURATOR_DOCKER_IMAGE}:${SRC_VERSION} as configurator
 #######################################
 # FINAL STAGE
 FROM main as final

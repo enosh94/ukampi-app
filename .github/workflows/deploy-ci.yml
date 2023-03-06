@@ -1,0 +1,76 @@
+name: Building Joint image and deploy
+
+on:
+  workflow_call:
+    inputs:
+      registy-auth-token:
+        required: true
+        type: string
+    secrets:
+      token:
+        required: true
+
+jobs:
+  server-build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+    - uses: actions/checkout@v3
+
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        images: |
+          ${{vars.REGISTRY_URL}}/${{vars.APP_DOCKER_IMAGE_LABEL}}:latest
+        tags: |
+          type=ref,event=branch
+          type=semver,pattern={{version}}
+
+
+    - name: Login to GAR
+      uses: docker/login-action@v2
+      with:
+        registry: ${{vars.REGISTRY_URL}}
+        username: oauth2accesstoken
+        password: ${{ inputs.registy-auth-token }}
+
+    - id: build-and-push-joint-docker-image
+      name: Build and push
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        platforms: linux/amd64,linux/arm64
+        file: ./docker/Dockerfile
+        push: true
+        build-args: |
+          DOCKER_METADATA_OUTPUT_JSON
+          SERVER_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.SERVER_DOCKER_IMAGE_LABEL}}
+          CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABELs}}
+
+    - name: copy docker-compose.yml via ssh
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ vars.SSH_SERVER_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        rm: true
+        source: "docker-compose.yml"
+        target: "/home/ukampi/docker/ukampi-app"
+
+    - name: Deploy to docker
+      if: build-and-push-joint-docker-image == 'success'
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ vars.SSH_SERVER_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: | 
+          ${{ inputs.registy-auth-token }} | docker login --username=oauth2accesstoken ${{vars.REGISTRY_URL}} --password-stdin
+          cd /home/ukampi/docker/ukampi-app
+          docker-compose pull
+          docker-compose up --detach
+

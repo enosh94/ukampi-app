@@ -29,12 +29,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-      
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
 
     - name: Set up Go
       uses: actions/setup-go@v3
@@ -124,7 +118,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
-        platforms: linux/amd64,linux/arm64
+        platforms: linux/amd64
         file: configurator-release.Dockerfile
         push: true
         tags: ${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABEL}}:latest

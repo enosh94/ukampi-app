@@ -16,7 +16,6 @@ on:
       - 'configurator/**'
   workflow_dispatch:
 
-
 jobs:
   configurator-build:
     # if: github.event.pull_request.merged == true
@@ -122,7 +121,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         file: configurator-release.Dockerfile
         push: true
-        tags: ${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABELs}}:latest
+        tags: ${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABEL}}:latest
 
   call-workflow-deploy:
     if: |

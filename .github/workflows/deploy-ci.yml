@@ -64,9 +64,6 @@ jobs:
           CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.CONFIGURATOR_REPOSITORY_NAME}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_NAME}}
 
     - name: Copy docker-compose.yml via ssh
-      if: |
-        always() && 
-        (steps.build-and-push-joint-docker-image == 'success')
       uses: appleboy/scp-action@master
       with:
         host: ${{ vars.SSH_SERVER_HOST }}
@@ -78,9 +75,6 @@ jobs:
         target: "/home/ukampi/docker/ukampi-app"
 
     - name: Deploy to docker
-      if: |
-        always() && 
-        (steps.build-and-push-joint-docker-image == 'success')
       uses: appleboy/ssh-action@v0.1.7
       with:
         host: ${{ vars.SSH_SERVER_HOST }}

@@ -3,7 +3,7 @@ name: Configurator CI
 on:
   push:
     branches:
-      - 'releases/**'
+      - 'release/**'
     paths:
       - 'configurator/**'
   pull_request:

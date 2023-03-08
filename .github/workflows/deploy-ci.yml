@@ -54,7 +54,7 @@ jobs:
       with:
         context: ./docker
         platforms: linux/amd64
-        file: Dockerfile
+        file: ./docker/Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}

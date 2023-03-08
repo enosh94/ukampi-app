@@ -8,20 +8,12 @@ on:
 jobs:
   server-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    - name: Docker meta
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        images: |
-          ${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.APP_REPOSITORY_NAME}}/${{vars.APP_DOCKER_IMAGE_NAME}}:latest
-        tags: |
-          type=ref,event=branch
-          type=semver,pattern={{version}}
 
     - id: 'auth'
       name: 'Authenticate to Google Cloud'
@@ -45,6 +37,17 @@ jobs:
         username: oauth2accesstoken
         password: ${{ steps.auth.outputs.access_token }}
 
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        images: |
+          ${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.APP_REPOSITORY_NAME}}/${{vars.APP_DOCKER_IMAGE_NAME}}
+        tags: |
+          type=ref,event=branch
+          type=semver,pattern={{version}}
+
     - id: build-and-push-joint-docker-image
       name: Build and push
       uses: docker/build-push-action@v3
@@ -58,7 +61,7 @@ jobs:
           SERVER_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.SERVER_REPOSITORY_NAME}}/${{vars.SERVER_DOCKER_IMAGE_NAME}}:latest
           CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.CONFIGURATOR_REPOSITORY_NAME}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_NAME}}:latest
 
-    - name: copy docker-compose.yml via ssh
+    - name: Copy docker-compose.yml via ssh
       if: |
         always() && 
         (steps.build-and-push-joint-docker-image == 'success')

@@ -64,7 +64,7 @@ jobs:
     #       SERVER_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.SERVER_REPOSITORY_NAME}}/${{vars.SERVER_DOCKER_IMAGE_NAME}}
     #       CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.CONFIGURATOR_REPOSITORY_NAME}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_NAME}}
 
-    - name: Copy docker-compose.yml via ssh
+    - name: Copy required files via ssh
       uses: appleboy/scp-action@master
       with:
         host: ${{ vars.SSH_SERVER_HOST }}

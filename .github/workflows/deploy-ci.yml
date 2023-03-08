@@ -89,3 +89,4 @@ jobs:
           sudo chmod -R 777 compose-data/
           docker compose pull
           docker compose up --detach
+          sudo chmod -R 777 compose-data/

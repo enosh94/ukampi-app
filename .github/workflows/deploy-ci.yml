@@ -52,9 +52,9 @@ jobs:
       name: Build and push
       uses: docker/build-push-action@v3
       with:
-        context: .
+        context: ./docker
         platforms: linux/amd64
-        file: ./docker/Dockerfile
+        file: Dockerfile
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}

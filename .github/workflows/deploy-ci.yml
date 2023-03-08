@@ -85,5 +85,5 @@ jobs:
         script: | 
           ${{ steps.auth.outputs.access_token }} | docker login --username=oauth2accesstoken ${{vars.REGISTRY_URL}} --password-stdin
           cd /home/ukampi/docker/ukampi-app
-          docker-compose pull
-          docker-compose up --detach
+          docker compose pull
+          docker compose up --detach

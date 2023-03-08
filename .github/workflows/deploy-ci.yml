@@ -71,8 +71,8 @@ jobs:
         username: ${{ secrets.SSH_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
-        rm: true
-        source: "docker-compose.yml"
+        # rm: true
+        source: "docker-compose.yml,compose-data"
         target: "/home/ukampi/docker/ukampi-app"
 
     - name: Deploy to docker

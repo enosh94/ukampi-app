@@ -60,8 +60,8 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           DOCKER_METADATA_OUTPUT_JSON
-          SERVER_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.SERVER_REPOSITORY_NAME}}/${{vars.SERVER_DOCKER_IMAGE_NAME}}:latest
-          CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.CONFIGURATOR_REPOSITORY_NAME}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_NAME}}:latest
+          SERVER_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.SERVER_REPOSITORY_NAME}}/${{vars.SERVER_DOCKER_IMAGE_NAME}}
+          CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.CONFIGURATOR_REPOSITORY_NAME}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_NAME}}
 
     - name: Copy docker-compose.yml via ssh
       if: |

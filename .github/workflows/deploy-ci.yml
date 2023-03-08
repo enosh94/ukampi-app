@@ -83,6 +83,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         port: 22
         script: | 
+          gcloud auth configure-docker europe-southwest1-docker.pkg.dev --quiet
           ${{ steps.auth.outputs.access_token }} | docker login --username=oauth2accesstoken ${{vars.REGISTRY_URL}} --password-stdin
           cd /home/ukampi/docker/ukampi-app
           docker compose pull

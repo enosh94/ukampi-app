@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - 'releases/**'
-      - 'master'
-  #   paths:
-  #     - 'server/**'
+    paths:
+      - 'server/**'
   pull_request:
     types:
       - closed
@@ -20,9 +19,6 @@ jobs:
   server-build:
     # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    outputs:
-      build-success-output: ${{ steps.build-and-push.outcome }}
-      access-token-output: ${{ steps.auth.outputs.access_token }}
     permissions:
       contents: 'read'
       id-token: 'write'

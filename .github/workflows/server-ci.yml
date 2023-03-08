@@ -103,13 +103,4 @@ jobs:
         platforms: linux/amd64
         file: server.Dockerfile
         push: true
-        tags: ${{vars.REGISTRY_URL}}/${{vars.SERVER_DOCKER_IMAGE_LABEL}}:latest
-
-  call-workflow-deploy:
-    if: |
-      always() && 
-      (needs.configurator-build.outputs.build-success-output == 'success')
-    uses: ./.github/workflows/deploy-ci.yml
-    with:
-      registy-auth-token: ${{needs.configurator-build.outputs.access-token-output}}
-    secrets: inherit
+        tags: ${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.SERVER_REPOSITORY_NAME}}/${{vars.SERVER_DOCKER_IMAGE_NAME}}:latest

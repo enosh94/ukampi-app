@@ -1,14 +1,9 @@
 name: Building Joint image and deploy
 
 on:
-  workflow_call:
-    inputs:
-      registy-auth-token:
-        required: true
-        type: string
-    secrets:
-      token:
-        required: true
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   server-build:
@@ -23,18 +18,32 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         images: |
-          ${{vars.REGISTRY_URL}}/${{vars.APP_DOCKER_IMAGE_LABEL}}:latest
+          ${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.APP_REPOSITORY_NAME}}/${{vars.APP_DOCKER_IMAGE_NAME}}:latest
         tags: |
           type=ref,event=branch
           type=semver,pattern={{version}}
 
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v1'
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.SERVICE_ACCOUNT }}
+    
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v1'
+
+    - id: 'gcloud'
+      name: 'gcloud'
+      run: gcloud auth configure-docker europe-southwest1-docker.pkg.dev --quiet
 
     - name: Login to GAR
       uses: docker/login-action@v2
       with:
         registry: ${{vars.REGISTRY_URL}}
         username: oauth2accesstoken
-        password: ${{ inputs.registy-auth-token }}
+        password: ${{ steps.auth.outputs.access_token }}
 
     - id: build-and-push-joint-docker-image
       name: Build and push
@@ -46,8 +55,8 @@ jobs:
         push: true
         build-args: |
           DOCKER_METADATA_OUTPUT_JSON
-          SERVER_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.SERVER_DOCKER_IMAGE_LABEL}}
-          CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_LABELs}}
+          SERVER_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.SERVER_REPOSITORY_NAME}}/${{vars.SERVER_DOCKER_IMAGE_NAME}}:latest
+          CONFIGURATOR_DOCKER_IMAGE=${{vars.REGISTRY_URL}}/${{vars.PROJECT_ID}}/${{vars.CONFIGURATOR_REPOSITORY_NAME}}/${{vars.CONFIGURATOR_DOCKER_IMAGE_NAME}}:latest
 
     - name: copy docker-compose.yml via ssh
       if: |
@@ -74,8 +83,7 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: | 
-          ${{ inputs.registy-auth-token }} | docker login --username=oauth2accesstoken ${{vars.REGISTRY_URL}} --password-stdin
+          ${{ steps.auth.outputs.access_token }} | docker login --username=oauth2accesstoken ${{vars.REGISTRY_URL}} --password-stdin
           cd /home/ukampi/docker/ukampi-app
           docker-compose pull
           docker-compose up --detach
-

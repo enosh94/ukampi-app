@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 jobs:
-  server-build:
+  deploy-to-server:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
